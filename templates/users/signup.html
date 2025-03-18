@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+    <title>Signup Page</title>
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  <!-- for message styles-->    
+
+    </head>
+<body>
+
+
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <h3>Signup Here</h3>
+            {% comment %}     
+            <!-- Messages -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p class="{{ message.tags }}" style="color:red">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %} {% endcomment %}
+
+            <!-- Display form fields with errors -->
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endfor %}
+
+            <button type="submit">Signup</button>
+            
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="{% url 'login' %}" style="color: white;">Already have an account?</a>
+            </div>
+        </form>
+    </body>
+    </html>
+        

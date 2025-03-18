@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+        <title>Create Company</title>
+    
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+
+<body>
+    <div class="container">        
+        <!-- Check for form submission errors -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Error:</strong> Please fix the errors below.
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <h3>Create Company</h3>
+            <!-- Render form fields -->
+            {{ form.as_p }}  <!-- Renders each form field inside a paragraph -->
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends "users/jbase.html" %}
+
+{% block title %}Job Applications{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Your Job Applications</h2>
+
+    {% if applications %}
+        <div class="table-responsive">
+            <table class="table table-hover text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td><a href="{% url 'job_detail' app.job.id %}" class="text-decoration-none fw-bold">{{ app.job.title }}</a></td>
+                        <td>{{ app.job.company.name }}</td>
+                        <td>{{ app.applied_at|date:"d M Y" }}</td>
+                        <td>
+                            {% if app.status == "Pending" %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif app.status == "Accepted" %}
+                                <span class="badge bg-success">Accepted</span>
+                            {% elif app.status == "Rejected" %}
+                                <span class="badge bg-danger">Rejected</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if app.status == "Pending" %}
+                                <a href="{% url 'update_job_application' app.id 'Withdrawn' %}" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="Withdraw Application">
+                                    <i class="fas fa-times-circle"></i> Withdraw
+                                </a>
+                            {% elif app.status == "Accepted" %}
+                                <span class="text-success fw-bold">Application Approved</span>
+                            {% elif app.status == "Rejected" %}
+                                <span class="text-danger fw-bold">Application Rejected</span>
+                            {% else %}
+                                <span class="text-muted">No Actions Available</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle"></i> You haven't applied for any jobs yet.
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'job_list' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Back to Jobs
+        </a>
+    </div>
+</div>
+
+<!-- Bootstrap Tooltip Activation -->
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+
+{% endblock %}

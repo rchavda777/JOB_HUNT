@@ -1,0 +1,35 @@
+{% extends 'users/jbase.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">User Profile</h2>
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center">
+                {% if user.profile.profile_picture %}
+                    <img src="#" alt="Profile Picture" class="img-thumbnail" width="150">
+                {% else %}
+                    <img src="#" alt="Default Profile Picture" class="img-thumbnail" width="150">
+                {% endif %}
+            </div>
+            <h4 class="mt-3">{{ user.username }}</h4>
+            <p><strong>Mobile Number:</strong> {{ user.profile.mobile_number }}</p>
+            <p><strong>Address:</strong> {{ user.profile.address }}</p>
+            <p><strong>Date of Birth:</strong> {{ user.profile.date_of_birth }}</p>
+            <p><strong>Gender:</strong> {{ user.profile.gender }}</p>
+
+            {% if user.profile.is_jobseeker %}
+                <h5 class="mt-4">Job Seeker Details</h5>
+                <p><strong>Resume:</strong> {% if user.profile.jobseeker_profile.resume %}<a href="{{ user.profile.jobseeker_profile.resume.url }}" target="_blank">View Resume</a>{% else %}Not uploaded{% endif %}</p>
+                <p><strong>Skills:</strong> {{ user.profile.jobseeker_profile.skills }}</p>
+                <p><strong>Job Preference:</strong> {{ user.profile.jobseeker_profile.job_preference }}</p>
+                <p><strong>Experience:</strong> {{ user.profile.jobseeker_profile.experience }} years</p>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn-primary">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

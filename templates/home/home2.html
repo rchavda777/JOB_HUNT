@@ -1,0 +1,25 @@
+{% extends "base.html" %}   
+
+{% block  title %} Home Page {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Welcome to the Job Portal</h1>
+    <p class="text-center">Find your dream job or post a job opening.</p>
+ 
+<div class="row">
+    {% for job in jobs %}
+        <div class="col-md-4">
+            <div class="card job-card" style="margin: 15px 0">
+                <div class="card-body"> 
+                    <h5 class="card-title">{{ job.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                    <p class="card-text">{{ job.description|truncatewords:20 }}</p>
+                    <a href="{% url "job_details" job.pk %}" class="card-link">View Details</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div> 
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "users/rbase.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Welcome to the Recruiter Dashboard, {{ user.username }}!</h1>
+
+    <!-- Company Profile Card -->
+    {% if company_profile %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h5 mb-0">Company Profile</h2>
+        </div>
+        <div class="card-body">
+            <p><strong>Company Name:</strong> {{ company_profile.name }}</p>
+            <p><strong>Location:</strong> {{ company_profile.location }}</p>
+            <p><strong>Description:</strong> {{ company_profile.description }}</p>
+            <a class="btn btn-warning" href="#">Edit Profile</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning">
+        No company profile found. <a href="#" class="alert-link">Create Profile</a>
+    </div>
+    {% endif %}
+
+    <!-- Stats Section -->
+    <div class="row text-center mb-4">
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h2>{{ total_jobs }}</h2>
+                    <p>Total Job Listings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h2>{{ active_jobs }}</h2>
+                    <p>Active Jobs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h2>{{ total_applications }}</h2>
+                    <p>Total Applications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Listings Table -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h2 class="h5 mb-0">Job Listings</h2>
+        </div>
+        <div class="card-body">
+            {% if jobs %}
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.title }}</td>
+                        <td>
+                            {% if job.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" href="{% url "view_applications" job.pk %}">View Applications</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted">No job listings available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Post a New Job Button -->
+    <div class="text-center mt-4">
+        <a class="btn btn-success btn-lg" href="{% url 'post_new_job' %}">Post a New Job</a>
+    </div>
+</div>
+{% endblock %}

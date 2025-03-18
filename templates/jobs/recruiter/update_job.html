@@ -1,0 +1,41 @@
+{% extends "users/rbase.html" %}
+{% load static %}
+
+{% block title %} Update Job {% endblock %}
+{% block extra-style %}
+    <link rel="stylesheet" href=" {% static "css/childstyle.css" %} ">
+    <style>
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;         /* Full width */
+            height: 150px;       /* Fixed height */
+            padding: 10px;       /* Inner spacing */
+            font-size: 16px;     /* Text size */
+            font-family: Arial, sans-serif;
+            border: 2px solid #ccc; /* Border */
+            border-radius: 5px;  /* Rounded corners */
+            resize: none;        /* Disable resizing */
+            outline: none;       /* Remove default focus outline */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<h2>Edit Job</h2>
+<form method = "post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type = "submit">Update</button>
+</form>
+
+<a href=" {% url "job_list" %} ">Back to Job</a>
+{% endblock  %}
+
+

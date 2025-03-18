@@ -1,0 +1,13 @@
+{% extends "users/jbase.html" %}
+
+{% block content %}
+<div class = "container mt-4">
+    <h1>Welcome to the Job Seeker Dashboard, {{ user.username }}</h1>   
+
+    <div class = "card-body">
+        <h2>User Profile</h2>
+        <p><strong>User Name : </strong>{{ user.username }}</p>
+        {% comment %} <p><strong>Skills : </strong>{{ job.skills }}</p> {% endcomment %}
+    </div>
+</div>
+{% endblock %}
