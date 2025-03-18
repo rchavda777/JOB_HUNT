@@ -3,7 +3,7 @@ from django.http import HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from users.models import UserProfile, Recruiter, JobSeeker
-from jobs.models import Job, CompanyProfile, JobApplication
+from jobs.models import Job,JobApplication
 from django.contrib import messages
 from django.db import transaction
 from .forms import SignupForm, LoginForm, UserProfileUpdateForm, JobSeekerUpdateForm
@@ -52,7 +52,6 @@ def LoginPage(request):
                     return redirect("jobseeker_dashboard")    
             else:
                 messages.error(request, "Invalid username or password")
-
     else:
         form = LoginForm()
 

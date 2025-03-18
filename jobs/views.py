@@ -116,12 +116,6 @@ def view_all_applications(request):
 def my_application(request):
     jobseeker = request.user.profile.jobseeker_profile
     applications = JobApplication.objects.filter(job_seeker=jobseeker).select_related("job", "job__company")
-
-    # Debugging: Print job details in console
-    # for app in applications:
-    #     print(f"Job Title: {app.job.title}, Company: {app.job.company.name}, Location: {app.job.location}")
-
-    # return HttpResponse(f"Total Applications: {applications.count()}")
     return render(request, "jobs/jobseeker/application_list.html", {"applications" : applications})
 
 # Manage job Application
@@ -182,3 +176,5 @@ def delete_job(request, job_id):
         return redirect('job_list')
     
     return render(request, 'jobs/recruiter/delete_job.html', {'job' : 'job'})
+
+

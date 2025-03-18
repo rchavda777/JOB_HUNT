@@ -53,29 +53,43 @@ class SignupForm(forms.ModelForm):
 
         if not email:
             raise forms.ValidationError("Email is required.")
-        
-        # Regex to allow only gmail addresses
-        gmail_pattern = r'^[a-zA-z0-9._%+-]+@gmail.com$'
+
+        # Corrected Regex for Gmail validation
+        gmail_pattern = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
         if not re.match(gmail_pattern, email, re.IGNORECASE):
             raise forms.ValidationError("Only Gmail addresses are allowed.")
 
+        # Ensure email is unique
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("An account with this email already exists.")
 
-        # # Validate email with an API call
-        # API_KEY = os.getenv("ZEROBOUNCE_API_KEY")
-        # if not API_KEY:
-        #     raise forms.ValidationError("ZeroBounce API key is missing. Please contact the site administrator.")
-       
-        # try:
-        #     response = requests.get(f"https://api.zerobounce.net/v2/validate?email={email}&apikey={API_KEY}")
-        #     response.raise_for_status()  # Raise an error for bad responses
-        #     data = response.json()  
-        
-        #     if data.get("status") != "valid":        
-        #         raise forms.ValidationError("Invalid or non-existent email address.")        
-        # except requests.exceptions.RequestException as e:
-        #     raise forms.ValidationError(f"Error validating email: {e}")
+        # # **MailboxLayer API Validation**
+        API_KEY = os.getenv("MAILBOXLAYER_APIKEY")
+
+        if not API_KEY:
+            raise ValidationError("API key is missing. Please contact the site administrator.")
+
+        # Make API request
+        try:
+            url = f"https://apilayer.net/api/check?access_key={API_KEY}&email={email}"
+            response = requests.get(url)
+
+            response.raise_for_status()  # Raise an error if API call fails
+            data = response.json()
+
+            # **Check email validation status**
+            valid_statuses = ["valid", "catch-all"]  # Acceptable statuses
+            if not data.get("format_valid"):
+                raise ValidationError("Invalid email format.")
+            
+            # if not data.get("smtp_check"):
+            #     raise ValidationError("Email server did not validate this email.")
+
+            if data.get("disposable"):
+                raise ValidationError("Disposable email addresses are not allowed.")
+
+        except requests.exceptions.RequestException as e:
+            raise ValidationError(f"Error validating email: {e}")
 
         return email.lower()
 
