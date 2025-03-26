@@ -130,7 +130,7 @@ def update_user_profile(request):
             if job_seeker_form:
                 job_seeker_form.save()
             messages.success(request, "Your profile has been updated successfully!")
-            return redirect("update_user_profile")  # Redirect to the same page after update
+            return redirect("jobseeker_profile")  # Redirect to the same page after update
         else:
             messages.error(request, "Please correct the errors below.")
     else:

@@ -63,22 +63,22 @@ class SignupForm(forms.ModelForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("An account with this email already exists.")
 
-        # # **MailboxLayer API Validation**
+        # third party email validation using mailboxlayer API
         API_KEY = os.getenv("MAILBOXLAYER_APIKEY")
 
         if not API_KEY:
             raise ValidationError("API key is missing. Please contact the site administrator.")
 
-        # Make API request
+        # API request
         try:
             url = f"https://apilayer.net/api/check?access_key={API_KEY}&email={email}"
             response = requests.get(url)
 
-            response.raise_for_status()  # Raise an error if API call fails
+            response.raise_for_status()  # error if API call fails
             data = response.json()
 
-            # **Check email validation status**
-            valid_statuses = ["valid", "catch-all"]  # Acceptable statuses
+            # check email validation status
+            valid_statuses = ["valid", "catch-all"]  
             if not data.get("format_valid"):
                 raise ValidationError("Invalid email format.")
             
@@ -92,7 +92,6 @@ class SignupForm(forms.ModelForm):
             raise ValidationError(f"Error validating email: {e}")
 
         return email.lower()
-
 
     # Password strength validation
     def validate_password_strength(self, password):
@@ -109,7 +108,7 @@ class SignupForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         #cleaned_data.get("role")
-        print("Cleaned Data :", cleaned_data) #Debugging to check the role
+        print("Cleaned Data :", cleaned_data) #Debugging
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
 
@@ -142,7 +141,7 @@ class SignupForm(forms.ModelForm):
             if commit:
                 user.save()
 
-                # Check if UserProfile already exists, and create it only if not
+                # Check if UserProfile already exists, and create new profile if profile not available
                 user_profile, created = UserProfile.objects.get_or_create(user=user)
                 if created:
                     user_profile.role = role  # Explicitly assign the role here
@@ -155,9 +154,8 @@ class SignupForm(forms.ModelForm):
                 elif role == UserProfile.RoleChoices.JOBSEEKER:
                     if not hasattr(user_profile, 'jobseeker'):
                         JobSeeker.objects.create(user_profile=user_profile)
-
+       
         return user
-
 
 # login Form
 class LoginForm(forms.Form):

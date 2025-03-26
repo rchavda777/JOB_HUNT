@@ -6,6 +6,7 @@ from jobs.models import Job, JobApplication
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from users.models import Recruiter, CompanyProfile, UserProfile
+from .utils import send_notification_email
 
 @login_required
 def create_company_profile(request):
@@ -77,20 +78,37 @@ def job_list(request):
 
     return render(request, "jobs/job_list.html", {"jobs": jobs})
 
-# Apply for Job.
+# Apply for Job
 def apply_job(request, job_id):
     user_profile = getattr(request.user, "profile", None)
     job_seeker = getattr(user_profile, "jobseeker_profile", None)
-    
+
     if not job_seeker:
         messages.error(request, "Only job seekers can apply for jobs.")
-        return redirect("job_details", job_id = job_id)
+        return redirect("job_details", job_id=job_id)
 
-    job = get_object_or_404(Job, pk = job_id)
+    job = get_object_or_404(Job, pk=job_id)
 
-    JobApplication.objects.create(job_seeker = job_seeker, job = job)
+    # Check if the user has already applied
+    if JobApplication.objects.filter(job_seeker=job_seeker, job=job).exists():
+        messages.warning(request, "You have already applied for this job.")
+        return redirect("job_details", job_id=job_id)
+
+    # Create job application
+    JobApplication.objects.create(job_seeker=job_seeker, job=job)
+
+    # Send email notification to user
+    subject = "Job Application Submitted"
+    message = f"Dear {request.user.username},\n\nYou have successfully applied for the job '{job.title}'.\n\nBest of luck!"
+    send_notification_email(subject, message, request.user.email)
+    
+    # send email to recruiter
+    subject = "New Job Application"
+    message = f"Dear {job.posted_by.username},\n\n A new job application has been submitted for the job '{job.title}'. \n\nBest of Luck!"
+    send_notification_email(subject, message, job.posted_by.email)
+
     messages.success(request, "Job application submitted successfully.")
-    return redirect("job_details", job_id = job_id)
+    return redirect("job_details", job_id=job_id)
 
 # View All job Application of All Job Posted by Recruiter
 def view_all_applications(request):
@@ -101,7 +119,7 @@ def view_all_applications(request):
         # Fetch all jobs posted by the current logged-in recruiter
         jobs_posted_by_recruiter = Job.objects.filter(posted_by=request.user)
         # Fetch applications for those jobs
-        applications = JobApplication.objects.filter(job__in=jobs_posted_by_recruiter)
+        applications = JobApplication.objects.filter(job__in=jobs_posted_by_recruiter) 
 
         if search_query:
             applications = applications.filter(
@@ -176,5 +194,4 @@ def delete_job(request, job_id):
         return redirect('job_list')
     
     return render(request, 'jobs/recruiter/delete_job.html', {'job' : 'job'})
-
 
