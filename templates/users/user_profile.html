@@ -1,15 +1,23 @@
 {% extends 'users/jbase.html' %}
 
 {% block content %}
+<style>
+.circular-image {
+    border-radius: 50%;
+    width: 150px; /* Adjust as needed */
+    height: 150px; /* Adjust as needed */
+    object-fit: cover; /* Ensures the image covers the area */
+}
+</style>
 <div class="container mt-4">
     <h2 class="text-center">User Profile</h2>
     <div class="card">
         <div class="card-body">
             <div class="text-center">
                 {% if user.profile.profile_picture %}
-                    <img src="#" alt="Profile Picture" class="img-thumbnail" width="150">
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail circular-image" width="150">
                 {% else %}
-                    <img src="#" alt="Default Profile Picture" class="img-thumbnail" width="150">
+                    <img src="#" alt="Default Profile Picture" class="img-thumbnail circular-image" width="150">
                 {% endif %}
             </div>
             <h4 class="mt-3">{{ user.username }}</h4>

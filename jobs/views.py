@@ -155,6 +155,11 @@ def update_application_status(request, app_id, status):
     job_application.status = status  # Updating the status field
     job_application.save()  # Save the updated instance
 
+    # Send email notification to job seeker
+    subject = "Job Application Status Updated"
+    message = f"Dear {job_application.job_seeker.user_profile.user.username},\n\nYour job application for '{job_application.job.title}' has been {status}.\n\nBest of luck!"
+    send_notification_email(subject, message, job_application.job_seeker.user_profile.user.email)
+    
     return redirect("view_applications", job_id=job_application.job.id)    
 
 # Manage Job 

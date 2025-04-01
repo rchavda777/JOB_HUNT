@@ -2,6 +2,7 @@ import re
 import os
 from dotenv import load_dotenv
 import requests
+from django.core.mail import send_mail
 from django.db import transaction
 from django import forms
 from django.contrib.auth.models import User
@@ -55,9 +56,9 @@ class SignupForm(forms.ModelForm):
             raise forms.ValidationError("Email is required.")
 
         # Corrected Regex for Gmail validation
-        gmail_pattern = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
-        if not re.match(gmail_pattern, email, re.IGNORECASE):
-            raise forms.ValidationError("Only Gmail addresses are allowed.")
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email, re.IGNORECASE):
+            raise forms.ValidationError("Please enter a valid email address.")
 
         # Ensure email is unique
         if User.objects.filter(email=email).exists():
@@ -82,8 +83,8 @@ class SignupForm(forms.ModelForm):
             if not data.get("format_valid"):
                 raise ValidationError("Invalid email format.")
             
-            # if not data.get("smtp_check"):
-            #     raise ValidationError("Email server did not validate this email.")
+            if not data.get("smtp_check"):
+                raise ValidationError("Email server did not validate this email.")
 
             if data.get("disposable"):
                 raise ValidationError("Disposable email addresses are not allowed.")
@@ -129,14 +130,14 @@ class SignupForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        with transaction.atomic(): # Either all or do nothing. User,UserProfile,(Jobseeker/Recruiter) profile create or none 
+        with transaction.atomic(): # Either all or do nothing.  
             user = super().save(commit=False)
             user.set_password(self.cleaned_data["password1"])
             role = self.cleaned_data.get("role")
 
             user.selected_role = role
-            # Debugging: Check role value
-            print(f"Role from form: {role}")
+            # # Debugging: Check role value
+            # print(f"Role from form: {role}")
 
             if commit:
                 user.save()
@@ -147,13 +148,31 @@ class SignupForm(forms.ModelForm):
                     user_profile.role = role  # Explicitly assign the role here
                     user_profile.save()
 
-                # Ensure no existing profiles before creating new ones
+                # Create appropriate profile based on the selected role
                 if role == UserProfile.RoleChoices.RECRUITER:
                     if not hasattr(user_profile, 'recruiter'):
                         Recruiter.objects.create(user_profile=user_profile)
                 elif role == UserProfile.RoleChoices.JOBSEEKER:
                     if not hasattr(user_profile, 'jobseeker'):
                         JobSeeker.objects.create(user_profile=user_profile)
+
+                # send confirmation email
+                subject = "Welocome to Job Hunt !"
+                message = f"""
+                Hello {user.username},
+                Thank you for signing up on Job Hunt. We are thrilled to have you on board.
+                You can now explore job opportunities and connect with recruiters.
+                If you have any questions or need assistance, feel free to reach out to us.
+                Best regards,
+                The Job Hunt Team
+                """
+                from_email = os.getenv("EMAIL_HOST_USER")
+                recipient_list = [user.email]
+
+                try:
+                    send_mail(subject, message, from_email, recipient_list)
+                except Exception as e:
+                    print(f"Error sending email: {e}")
        
         return user
 
