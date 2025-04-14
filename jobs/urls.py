@@ -11,7 +11,8 @@ urlpatterns = [
     path('job_delete/<int:job_id>', views.delete_job, name = "delete_job"),
     path('apply_job/<int:job_id>', views.apply_job, name = "apply_job"),
     path('view_all_applications/', views.view_all_applications, name="view_all_applications"),
-    path("update_application/<int:app_id>/<str:status>/", views.update_application_status, name="update_application_status"),
+    path("update-application-status/<int:app_id>/<str:status>/", views.update_application_status, name="update_application_status"),
     path("update-application/<int:app_id>/<str:status>/", views.update_job_application, name="update_job_application"),
-    path("my_application/", views.my_application, name="my_application"),
+    path("my-application/", views.my_application, name="my_application"),
+    path('withdraw-application/<int:application_id>/', views.withdraw_application, name='withdraw_application'),
 ]

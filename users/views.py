@@ -93,6 +93,7 @@ def recruiter_dashboard(request):
     }
     return render(request, "users/recruiter_dashboard.html", context)
 
+
 @login_required
 def jobseeker_dashboard(request):
     try:
@@ -101,10 +102,21 @@ def jobseeker_dashboard(request):
 
         if not user_profile.is_jobseeker():
             return HttpResponseForbidden("You are not authorized to access the page.")
-    except(UserProfile.DoesNotExist, JobSeeker.DoesNotExist):
+        
+        # Fetch JobSeeker profile
+        job_seeker = JobSeeker.objects.get(user_profile=user_profile)
+
+        # Fetch job applications with related job details
+        applications = JobApplication.objects.select_related('job', 'job__company').filter(job_seeker=job_seeker)
+
+    except (UserProfile.DoesNotExist, JobSeeker.DoesNotExist):
         return HttpResponseForbidden("Jobseeker profile not found.")
 
-    return render(request, "users/jobseeker_dashboard.html")
+    # Pass data to template
+    return render(request, "users/jobseeker_dashboard.html", {
+        "job_seeker": job_seeker,
+        "applications": applications
+    })
 
 @login_required
 def Logout_user(request):

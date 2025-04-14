@@ -79,17 +79,26 @@ def job_list(request):
     return render(request, "jobs/job_list.html", {"jobs": jobs})
 
 # Apply for Job
+@login_required
 def apply_job(request, job_id):
-    user_profile = getattr(request.user, "profile", None)
-    job_seeker = getattr(user_profile, "jobseeker_profile", None)
+    user = request.user  # Ensure user is authenticated
 
+    # Check if user has a profile
+    user_profile = getattr(user, "profile", None)
+    if not user_profile:
+        messages.error(request, "Your profile is incomplete. Please update your profile before applying.")
+        return redirect("jobseeker_profile")
+
+    # Check if user is a job seeker
+    job_seeker = getattr(user_profile, "jobseeker_profile", None)
     if not job_seeker:
         messages.error(request, "Only job seekers can apply for jobs.")
         return redirect("job_details", job_id=job_id)
 
+    # Retrieve the job
     job = get_object_or_404(Job, pk=job_id)
 
-    # Check if the user has already applied
+    # Check if the job already has an application from this user
     if JobApplication.objects.filter(job_seeker=job_seeker, job=job).exists():
         messages.warning(request, "You have already applied for this job.")
         return redirect("job_details", job_id=job_id)
@@ -97,15 +106,23 @@ def apply_job(request, job_id):
     # Create job application
     JobApplication.objects.create(job_seeker=job_seeker, job=job)
 
-    # Send email notification to user
-    subject = "Job Application Submitted"
-    message = f"Dear {request.user.username},\n\nYou have successfully applied for the job '{job.title}'.\n\nBest of luck!"
-    send_notification_email(subject, message, request.user.email)
-    
-    # send email to recruiter
-    subject = "New Job Application"
-    message = f"Dear {job.posted_by.username},\n\n A new job application has been submitted for the job '{job.title}'. \n\nBest of Luck!"
-    send_notification_email(subject, message, job.posted_by.email)
+    # Send email notification to job seeker
+    try:
+        send_notification_email(
+            subject="Job Application Submitted",
+            message=f"Dear {user.username},\n\nYou have successfully applied for the job '{job.title}'.\n\nBest of luck!",
+            recipient_email=user.email,
+        )
+
+        # Send email to recruiter
+        if job.posted_by and job.posted_by.email:
+            send_notification_email(
+                subject="New Job Application",
+                message=f"Dear {job.posted_by.username},\n\nA new job application has been submitted for '{job.title}'.\n\nBest of luck!",
+                recipient_email=job.posted_by.email,
+            )
+    except Exception as e:
+        messages.error(request, f"Error sending email: {e}")
 
     messages.success(request, "Job application submitted successfully.")
     return redirect("job_details", job_id=job_id)
@@ -132,9 +149,36 @@ def view_all_applications(request):
 
 # view all jobappliactions of a particular Jobseeker    
 def my_application(request):
-    jobseeker = request.user.profile.jobseeker_profile
-    applications = JobApplication.objects.filter(job_seeker=jobseeker).select_related("job", "job__company")
-    return render(request, "jobs/jobseeker/application_list.html", {"applications" : applications})
+    user_profile = getattr(request.user, "profile", None)
+    job_seeker = getattr(user_profile, "jobseeker_profile", None)
+
+    if not job_seeker:
+        messages.error(request, "No job applications found.")
+        return redirect("job_list")
+
+    applications = JobApplication.objects.select_related('job', 'job__company').filter(job_seeker=job_seeker)
+
+    return render(request, "jobs/jobseeker/application_list.html", {"applications": applications})
+
+# withrawal of job application by Job Seeker
+@login_required
+def withdraw_application(request, application_id):
+    user_profile = getattr(request.user, "profile", None)
+    job_seeker = getattr(user_profile, "jobseeker_profile", None)
+
+    if not job_seeker:
+        messages.error(request, "You are not authorized to withdraw applications.")
+        return redirect(request.META.get("HTTP_REFERER", "jobseeker_dashboard"))
+
+    application = get_object_or_404(JobApplication, id=application_id, job_seeker=job_seeker)
+
+    if application.status.lower() == "pending":  
+        application.delete()
+        messages.success(request, "Your job application has been successfully withdrawn.")
+    else:
+        messages.error(request, "You can only withdraw pending applications.")
+
+    return redirect(request.META.get("HTTP_REFERER", "jobseeker_dashboard"))
 
 # Manage job Application
 def view_appliaction(request, job_id):
