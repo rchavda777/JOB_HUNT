@@ -6,7 +6,7 @@ from users.models import UserProfile, Recruiter, JobSeeker
 from jobs.models import Job,JobApplication
 from django.contrib import messages
 from django.db import transaction
-from .forms import SignupForm, LoginForm, UserProfileUpdateForm, JobSeekerUpdateForm
+from .forms import SignupForm, LoginForm, UserProfileUpdateForm, JobSeekerUpdateForm, RecruiterProfileUpdateForm, CompanyProfileUpdateForm
 
 def SignupPage(request):
     if request.method == "POST":
@@ -154,3 +154,55 @@ def update_user_profile(request):
         "job_seeker_form": job_seeker_form,
     }
     return render(request, "users/user_profile_update.html", context)
+
+@login_required
+def edit_recruiter_profile(request):
+    user_profile = request.user.profile
+
+    # Check if the user is a recruiter
+    if not user_profile.is_recruiter():
+        return HttpResponseForbidden("You are not authorized to access this page.")
+
+    # Fetch recruiter and company data from the profile
+    recruiter = user_profile.recruiter_profile
+    company = recruiter.company
+
+    # Process the form data
+    if request.method == "POST":
+        user_form = UserProfileUpdateForm(request.POST, request.FILES, instance=user_profile)
+        recruiter_form = RecruiterProfileUpdateForm(request.POST, instance=recruiter)
+        company_form = CompanyProfileUpdateForm(request.POST, instance=company)
+
+        if user_form.is_valid() and recruiter_form.is_valid() and company_form.is_valid():
+            user_form.save()
+            recruiter_form.save()
+            company_form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect("recruiter_dashboard")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        user_form = UserProfileUpdateForm(instance=user_profile)
+        recruiter_form = RecruiterProfileUpdateForm(instance=recruiter)
+        company_form = CompanyProfileUpdateForm(instance=company)
+
+    # Prepare context for template rendering
+    context = {
+        'user_profile_form': user_form,
+        'recruiter_form': recruiter_form,
+        'company_form': company_form,
+        'user': request.user  # Add user to access profile picture, etc.
+    }
+
+    return render(request, 'users/recruiter_profile_update.html', context)
+@login_required
+def remove_company(request):
+    if request.method == 'POST':
+        recruiter = request.user
+        if recruiter.company:
+            recruiter.company = None
+            recruiter.save()
+            messages.success(request, "Company removed successfully.")
+        else:
+            messages.warning(request, "No company associated.")
+    return redirect('edit_recruiter_profile')

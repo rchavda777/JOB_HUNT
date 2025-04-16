@@ -7,7 +7,7 @@ from django.db import transaction
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from users.models import UserProfile, Recruiter, JobSeeker
+from users.models import UserProfile, Recruiter, JobSeeker, CompanyProfile
 
 load_dotenv()
 
@@ -243,3 +243,18 @@ class JobSeekerUpdateForm(forms.ModelForm):
             if not resume.name.endswith(('.pdf', '.docx')):
                 raise forms.ValidationError("Only PDF or DOCX files are allowed.")
         return resume
+
+class RecruiterProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Recruiter
+        fields = ['position']
+
+class UserProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture', 'mobile_number', 'address', 'date_of_birth', 'gender']
+
+class CompanyProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CompanyProfile
+        fields = ['name', 'industry', 'location', 'website', 'contact_info', 'description']

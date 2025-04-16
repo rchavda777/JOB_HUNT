@@ -64,7 +64,7 @@
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">Job Hunt</a>
 
-            <!-- Toggle button for mobile view -->
+            <!-- Toggle button for Responsive Navigation Bar -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -106,11 +106,6 @@
                     {% endif %}
                 </ul>
 
-                <!-- Search form -->
-                <form class="d-flex">
-                    <input class="form-control me-2" type="text" value="{{ search_query }}" placeholder="Search" name="search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
             </div>
         </div>
     </nav>

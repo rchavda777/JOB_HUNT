@@ -9,6 +9,9 @@ urlpatterns = [
     path('recruiter_dashboard', views.recruiter_dashboard, name= "recruiter_dashboard"),
     path('logout/', views.Logout_user, name = 'logout'),
     path('jobseeker-profile/', views.update_user_profile, name='jobseeker_profile'),
+    path('recruiter/edit-profile/', views.edit_recruiter_profile, name='edit_recruiter_profile'),
+    path('recruiter/remove-company/', views.remove_company, name='remove_company'),
+
 
     # Password Reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name="reset_pass/password_reset.html"), name="password_reset"),

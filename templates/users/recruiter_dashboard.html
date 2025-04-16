@@ -14,7 +14,7 @@
             <p><strong>Company Name:</strong> {{ company_profile.name }}</p>
             <p><strong>Location:</strong> {{ company_profile.location }}</p>
             <p><strong>Description:</strong> {{ company_profile.description }}</p>
-            <a class="btn btn-warning" href="#">Edit Profile</a>
+            <a class="btn btn-warning" href="{% url "edit_recruiter_profile" %}">Edit Profile</a>
         </div>
     </div>
     {% else %}
