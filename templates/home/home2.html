@@ -1,25 +1,93 @@
-{% extends "base.html" %}   
+{% extends "base.html" %}
 
-{% block  title %} Home Page {% endblock %}
+{% block title %}Home Page{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">Welcome to the Job Portal</h1>
     <p class="text-center">Find your dream job or post a job opening.</p>
- 
-<div class="row">
-    {% for job in jobs %}
-        <div class="col-md-4">
-            <div class="card job-card" style="margin: 15px 0">
-                <div class="card-body"> 
-                    <h5 class="card-title">{{ job.title }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
-                    <p class="card-text">{{ job.description|truncatewords:20 }}</p>
-                    <a href="{% url "job_details" job.pk %}" class="card-link">View Details</a>
+
+    <!-- Total Jobs Found -->
+    <p class="text-center mt-3"><strong>{{ total_results }}</strong> job{{ total_results|pluralize }} found</p>
+
+    <!-- Filter Form -->
+    <form method="get" class="row mb-4">
+        <div class="col-md-3">
+            <input type="text" name="title" class="form-control" placeholder="Search by job title" value="{{ filters.title }}">
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="company" class="form-control" placeholder="Search by company" value="{{ filters.company }}">
+        </div>
+        <div class="col-md-3">
+            <select name="location" class="form-control">
+                <option value="">All Locations</option>
+                {% for loc in all_locations %}
+                    <option value="{{ loc }}" {% if loc == filters.location %}selected{% endif %}>{{ loc }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="job_type" class="form-control">
+                <option value="">All Job Types</option>
+                {% for jt in all_job_types %}
+                    <option value="{{ jt }}" {% if jt == filters.job_type %}selected{% endif %}>{{ jt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Job Cards -->
+    <div class="row">
+        {% for job in jobs %}
+            <div class="col-md-4">
+                <div class="card job-card mb-4 border{% if job.posted_at > today_minus_3 %} border-success{% endif %}">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ job.title }}
+                            {% if job.posted_at > today_minus_3 %}
+                                <span class="badge bg-success">New</span>
+                            {% endif %}
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ job.company.name }}</h6>
+                        <p class="card-text">{{ job.description|truncatewords:20 }}</p>
+                        <p class="card-text">
+                            <small class="text-muted">{{ job.location }} | {{ job.job_type }}</small>
+                        </p>
+                        <a href="{% url 'job_details' job.pk %}" class="card-link">View Details</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
-</div> 
+        {% empty %}
+            <p class="text-center">No jobs found matching your search.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination">
+                {% if jobs.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{{ request.GET.urlencode|safe|cut:'page=' }}">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ jobs.previous_page_number }}{{ request.GET.urlencode|safe|cut:'page=' }}">Previous</a>
+                    </li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Page {{ jobs.number }} of {{ jobs.paginator.num_pages }}</span></li>
+                {% if jobs.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ jobs.next_page_number }}{{ request.GET.urlencode|safe|cut:'page=' }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ jobs.paginator.num_pages }}{{ request.GET.urlencode|safe|cut:'page=' }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>  
 </div>
 {% endblock %}
