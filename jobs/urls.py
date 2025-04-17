@@ -15,4 +15,5 @@ urlpatterns = [
     path("update-application/<int:app_id>/<str:status>/", views.update_job_application, name="update_job_application"),
     path("my-application/", views.my_application, name="my_application"),
     path('withdraw-application/<int:application_id>/', views.withdraw_application, name='withdraw_application'),
+    path('job-recommendation/', views.recommended_jobs, name='job_recommendation'),
 ]

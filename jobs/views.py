@@ -244,3 +244,32 @@ def delete_job(request, job_id):
     
     return render(request, 'jobs/recruiter/delete_job.html', {'job' : 'job'})
 
+
+@login_required
+def recommended_jobs(request):
+    user_profile = getattr(request.user, "profile", None)
+    job_seeker = getattr(user_profile, "jobseeker_profile", None)
+
+    if not job_seeker:
+        messages.error(request, "You must be jobseeker to view recommended jobs.")
+        return redirect("job_list")
+    
+    seeker_skills = job_seeker.skills or []
+    seeker_skills_lower = [skill.lower() for skill in seeker_skills]
+
+    # get active jobs
+    active_jobs = Job.objects.filter(
+        is_active=True,
+    ).order_by('-posted_at')
+
+    # Filter jobs based on skills manually
+    recommended_jobs = [
+        job for job in active_jobs
+        if any(skill.lower() in seeker_skills_lower for skill in job.required_skills)
+    ]
+
+    return render(
+        request,
+        "jobs/jobseeker/recommended_jobs.html",
+        {"jobs": recommended_jobs}
+    )

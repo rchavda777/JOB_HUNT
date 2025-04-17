@@ -1,0 +1,23 @@
+{% extends "users/jbase.html" %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="mb-4">Recommended Jobs for You</h2>
+    {% if jobs %}
+      <ul class="list-group">
+        {% for job in jobs %}
+          <li class="list-group-item">
+            <h5>{{ job.title }} at {{ job.company.name }}</h5>
+            <p>Location: {{ job.location }}</p>
+            <p>Required Skills: {{ job.required_skills }}</p>
+            <a href="{% url 'job_details' job.id %}" class="btn btn-sm btn-primary mt-2">View Details</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="alert alert-info mt-3">
+        No matching jobs found for your current skill set.
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
