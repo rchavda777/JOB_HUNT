@@ -1,83 +1,91 @@
 {% extends "users/jbase.html" %}
 
 {% block content %}
+
 {% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    </div>
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+</div>
 {% endif %}
 
 <div class="container mt-4">
-    <h1>Welcome to the Job Seeker Dashboard, {{ user.username }}</h1>
-    
+    <h1 class="text-center mb-4">Welcome to the Job Seeker Dashboard, {{ user.username }}</h1>
+
+    <!-- Profile Section -->
     <div class="card mb-4">
         <div class="card-body">
-            <h2>User Profile</h2>
+            <h2 class="h5">User Profile</h2>
             <p><strong>User Name:</strong> {{ user.username }}</p>
             <p><strong>Skills:</strong> {{ job_seeker.skills }}</p>
         </div>
     </div>
 
+    <!-- Applications Table -->
     <div class="card">
         <div class="card-body">
-            <h2>My Job Applications</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Job Title</th>
-                        <th>Company</th>
-                        <th>Application Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for application in applications %}
-                    <tr>
-                        <td>{{ application.job.title }}</td>
-                        <td>{{ application.job.company.name }}</td>
-                        <td>{{ application.applied_at}}</td>
-                        <td>
-                            {% if application.status|lower == "pending" %}
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            {% elif application.status|lower == "accepted" %}
-                                <span class="badge bg-success">Accepted</span>
-                            {% elif application.status|lower == "rejected" %}
-                                <span class="badge bg-danger">Rejected</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Unknown</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if application.status|lower == "pending" %}
+            <h2 class="h5 mb-3">My Job Applications</h2>
+
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Application Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.job.title }}</td>
+                            <td>{{ application.job.company.name }}</td>
+                            <td>{{ application.applied_at }}</td>
+                            <td>
+                                {% if application.status|lower == "pending" %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif application.status|lower == "accepted" %}
+                                    <span class="badge bg-success">Accepted</span>
+                                {% elif application.status|lower == "rejected" %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Unknown</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if application.status|lower == "pending" %}
                                 <form method="POST" action="{% url 'withdraw_application' application.id %}" onsubmit="return confirmWithdraw();">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm">Withdraw</button>
                                 </form>
-                            {% else %}
-                                <span class="text-muted">Cannot withdraw</span>
-                            {% endif %}
-                        </td>
-                        
-                        <script>
-                            function confirmWithdraw() {
-                                return confirm("Are you sure you want to withdraw your job application?");
-                            }
-                        </script>                        
-
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">No applications found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                {% else %}
+                                    <span class="text-muted">Cannot withdraw</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No applications found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- JS confirmation -->
+<script>
+    function confirmWithdraw() {
+        return confirm("Are you sure you want to withdraw your job application?");
+    }
+</script>
+
 {% endblock %}

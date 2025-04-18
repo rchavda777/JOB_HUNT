@@ -5,8 +5,9 @@
     <h2 class="text-center mb-4">My Job Applications</h2>
 
     {% if applications %}
-        <table class="table table-hover table-bordered">
-            <thead class="table-dark">
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle">
+            <thead class="table-dark text-center">
                 <tr>
                     <th>Job Title</th>
                     <th>Company</th>
@@ -17,27 +18,27 @@
             </thead>
             <tbody>
                 {% for application in applications %}
-                    <tr>
-                        <td>{{ application.job.title }}</td>
-                        <td>{{ application.job.company.name }}</td>
-                        <td>{{ application.job.location }}</td>
-                        <td>{{ application.applied_at }}</td>
-                        <td>
-                            {% if application.status == "Accepted" %}
-                                <span class="badge bg-success">{{ application.status }}</span>
-                            {% elif application.status == "Rejected" %}
-                                <span class="badge bg-danger">{{ application.status }}</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">{{ application.status }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
+                <tr>
+                    <td>{{ application.job.title }}</td>
+                    <td>{{ application.job.company.name }}</td>
+                    <td>{{ application.job.location }}</td>
+                    <td>{{ application.applied_at }}</td>
+                    <td>
+                        {% if application.status == "Accepted" %}
+                            <span class="badge bg-success">{{ application.status }}</span>
+                        {% elif application.status == "Rejected" %}
+                            <span class="badge bg-danger">{{ application.status }}</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">{{ application.status }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
     {% else %}
-        <p class="text-center text-muted">No applications found.</p>
+    <p class="text-center text-muted">No applications found.</p>
     {% endif %}
 </div>
-
 {% endblock %}

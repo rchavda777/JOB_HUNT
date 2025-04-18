@@ -34,7 +34,7 @@
 
         /* Responsive Navbar */
         .navbar-nav {
-            text-align: center;
+            text-align: left; /* Align nav items to the left */
         }
 
         .nav-item {
@@ -72,8 +72,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
     
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto"> <!-- Keep 'ml-auto' here to align nav items to the right on desktop view -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'recruiter_dashboard' %}active{% endif %}" href="{% url 'recruiter_dashboard' %}">Home</a>
                     </li>

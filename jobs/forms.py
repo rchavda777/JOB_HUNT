@@ -50,7 +50,7 @@ class JobForm(forms.ModelForm):
 
         widgets = {
             "title": forms.TextInput(attrs= {"placeholder": "Job Title", "class": "form-input"}),
-            "description" : forms.TextInput(attrs= {"placeholder" : "Job Description", "class": "form-input"}),
+            "description" : forms.Textarea(attrs= {"placeholder" : "Job Description", "class": "form-input"}),
             "location" : forms.TextInput(attrs= {"placeholder" : "Job Location", "class" : "form-input"}),
             "salary_min" : forms.NumberInput(attrs= {"placeholder" : "Minimum salary", "class" : "form-input"}),
             "salary_max" : forms.NumberInput(attrs = {"placeholder" : "Maximum salary", "class" : "form-input"}),

@@ -10,15 +10,15 @@
     <!-- Total Jobs Found -->
     <p class="text-center mt-3"><strong>{{ total_results }}</strong> job{{ total_results|pluralize }} found</p>
 
-    <!-- Filter Form -->
-    <form method="get" class="row mb-4">
-        <div class="col-md-3">
+    <!-- Filter Form (Responsive) -->
+    <form method="get" class="row row-cols-1 row-cols-md-5 g-2 mb-4">
+        <div class="col">
             <input type="text" name="title" class="form-control" placeholder="Search by job title" value="{{ filters.title }}">
         </div>
-        <div class="col-md-3">
+        <div class="col">
             <input type="text" name="company" class="form-control" placeholder="Search by company" value="{{ filters.company }}">
         </div>
-        <div class="col-md-3">
+        <div class="col">
             <select name="location" class="form-control">
                 <option value="">All Locations</option>
                 {% for loc in all_locations %}
@@ -26,7 +26,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col">
             <select name="job_type" class="form-control">
                 <option value="">All Job Types</option>
                 {% for jt in all_job_types %}
@@ -34,15 +34,15 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <div class="col d-grid">
+            <button type="submit" class="btn btn-primary">Filter</button>
         </div>
     </form>
 
-    <!-- Job Cards -->
+    <!-- Job Cards (Responsive Grid) -->
     <div class="row">
         {% for job in jobs %}
-            <div class="col-md-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card job-card mb-4 border{% if job.posted_at > today_minus_3 %} border-success{% endif %}">
                     <div class="card-body">
                         <h5 class="card-title">
@@ -65,7 +65,7 @@
         {% endfor %}
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination (Responsive) -->
     <div class="d-flex justify-content-center mt-4">
         <nav>
             <ul class="pagination">
@@ -88,6 +88,6 @@
                 {% endif %}
             </ul>
         </nav>
-    </div>  
+    </div>
 </div>
 {% endblock %}
