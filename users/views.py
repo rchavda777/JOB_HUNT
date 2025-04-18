@@ -195,6 +195,8 @@ def edit_recruiter_profile(request):
     }
 
     return render(request, 'users/recruiter_profile_update.html', context)
+
+
 @login_required
 def remove_company(request):
     if request.method == 'POST':
