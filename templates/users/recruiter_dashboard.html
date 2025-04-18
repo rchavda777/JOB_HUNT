@@ -19,7 +19,7 @@
     </div>
     {% else %}
     <div class="alert alert-warning">
-        No company profile found. <a href="#" class="alert-link">Create Profile</a>
+        No company profile found. <a href="{% url "create_company_profile" %}" class="alert-link">Create Profile</a>
     </div>
     {% endif %}
 

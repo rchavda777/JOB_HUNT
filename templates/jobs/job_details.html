@@ -5,65 +5,45 @@
 {% block content %}
 <div class="job-details-container" style="max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #fdfdfd;">
   
-  <h1 style="margin-bottom: 10px;">{{ job.title }}</h1>
+  <h1 class="mb-3">{{ job.title }}</h1>
+  <h3 class="mb-4">Company: {{ job.company.name }}</h3>
   
-  <h3 style="margin-bottom: 20px;">Company: {{ job.company.name }}</h3>
-  
-  <p>
-    <strong>Location:</strong> {{ job.location }}
-  </p>
-  
-  <p>
-    <strong>Description:</strong><br>
-    {{ job.description }}
-  </p>
-  
-  <p>
-    <strong>Required Skills:</strong> {{ job.required_skills }}
-  </p>
-  
-  <p>
-    <strong>Job Type:</strong> {{ job.get_job_type_display }}
-  </p>
+  <p><strong>Location:</strong> {{ job.location }}</p>
+  <p><strong>Description:</strong><br>{{ job.description }}</p>
+  <p><strong>Required Skills:</strong> {{ job.required_skills }}</p>
+  <p><strong>Job Type:</strong> {{ job.get_job_type_display }}</p>
   
   {% if job.salary_min or job.salary_max %}
-    <p>
-      <strong>Salary Range:</strong>
-      {% if job.salary_min %} {{ job.salary_min }}{% endif %}
+    <p><strong>Salary Range:</strong>
+      {% if job.salary_min %}{{ job.salary_min }}{% endif %}
       {% if job.salary_max %} - {{ job.salary_max }}{% endif %}
     </p>
   {% endif %}
   
-  <p>
-    <strong>Posted on:</strong> {{ job.posted_at|date:"F j, Y" }}
-  </p>
+  <p><strong>Posted on:</strong> {{ job.posted_at|date:"F j, Y" }}</p>
   
   {% if job.is_active %}
-    <p style="color: green;"><strong>Status:</strong> Active</p>
+    <p class="text-success"><strong>Status:</strong> Active</p>
   {% else %}
-    <p style="color: red;"><strong>Status:</strong> Inactive</p>
+    <p class="text-danger"><strong>Status:</strong> Inactive</p>
   {% endif %}
-  
-  {% comment %} <!-- Navigation Buttons -->
-  <div style="margin-top: 20px;">
-    <a href="#" class="btn btn-primary" style="padding: 10px 15px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">Apply Now</a>
-    <a href="{% url 'home' %}" class="btn btn-secondary" style="padding: 10px 15px; background-color: #6c757d; color: #fff; text-decoration: none; border-radius: 4px; margin-left: 10px;">Back to Home</a>
-  </div>
-  {% endcomment %}
 
-  <div style="margin-top: 20px;">
+  <!-- Navigation Buttons -->
+  <div class="mt-4 d-flex flex-wrap gap-2">
     {% if user.is_authenticated %}
       {% if has_applied %}
-        <button class = "btn btn-secondary" disabled>Already Applied</button>
+        <button class="btn btn-secondary" disabled>Already Applied</button>
       {% else %}
-        <form action="{% url 'apply_job' job.id %}" method="POST">
+        <form action="{% url 'apply_job' job.id %}" method="POST" class="d-inline">
           {% csrf_token %}
-          <button type="submit" class = "btn btn-primary">Apply Now</button>
+          <button type="submit" class="btn btn-primary">Apply Now</button>
         </form>
       {% endif %}
     {% else %}
-      <a href="{% url "login" %}" class = "btn btn-primary" >Login to Apply</a>
+      <a href="{% url "login" %}" class="btn btn-primary">Login to Apply</a>
     {% endif %}
-     <a href="{% url 'home' %}" class="btn btn-secondary" style="padding: 10px 15px; background-color: #6c757d; color: #fff; text-decoration: none; border-radius: 4px; margin-left: 10px;">Back to Home</a>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+  </div>
 </div>
-{% endblock %} 
+{% endblock %}

@@ -8,19 +8,28 @@ from django.core.exceptions import PermissionDenied
 from users.models import Recruiter, CompanyProfile, UserProfile
 from .utils import send_notification_email
 
+
 @login_required
 def create_company_profile(request):
     if request.method == 'POST':
         form = CompanyForm(request.POST)
         if form.is_valid():
-            company = form.save(commit=False)  # Do not save yet
-            
-            # Ensure user has a UserProfile
+            company = form.save(commit=False)
+
+            # Get or create the user's profile
             user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-            
-            company.user_profile = user_profile  # Assign UserProfile to company
-            company.save()  # Save the form with UserProfile
-            return redirect('company_list')  # Redirect after successful creation
+
+            # Save company and link to user profile
+            company.user_profile = user_profile
+            company.save()
+
+            # Link the company to the recruiter's profile
+            recruiter = Recruiter.objects.get(user_profile=user_profile)
+            recruiter.company = company
+            recruiter.save()
+
+            messages.success(request, "Company profile created and linked successfully!")
+            return redirect('edit_recruiter_profile')  # or wherever you want to go next
     else:
         form = CompanyForm()
 

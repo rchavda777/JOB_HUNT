@@ -67,29 +67,30 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'recruiter_dashboard' %}">Recruiter Dashboard</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
+    
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'recruiter_dashboard' %}">Home</a>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'recruiter_dashboard' %}active{% endif %}" href="{% url 'recruiter_dashboard' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'post_new_job' %}">Post Job</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'post_new_job' %}active{% endif %}" href="{% url 'post_new_job' %}">Post Job</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'job_list' %}">Manage Job Listings</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'job_list' %}active{% endif %}" href="{% url 'job_list' %}">Manage Job Listings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'view_all_applications' %}">View Applications</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'view_all_applications' %}active{% endif %}" href="{% url 'view_all_applications' %}">View Applications</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_company_profile' %}">Create Company Profile</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'create_company_profile' %}active{% endif %}" href="{% url 'create_company_profile' %}">Create Company Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "edit_recruiter_profile" %}">Account Settings</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'edit_recruiter_profile' %}active{% endif %}" href="{% url 'edit_recruiter_profile' %}">Account Settings</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Logout</a>
@@ -98,7 +99,7 @@
             </div>
         </div>
     </nav>
-
+    
     <!-- Main Content -->
     <div class="content">
         {% block content %}{% endblock %}
