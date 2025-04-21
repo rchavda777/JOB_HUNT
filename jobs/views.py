@@ -127,7 +127,12 @@ def apply_job(request, job_id):
         if job.posted_by and job.posted_by.email:
             send_notification_email(
                 subject="New Job Application",
-                message=f"Dear {job.posted_by.username},\n\nA new job application has been submitted for '{job.title}'.\n\nBest of luck!",
+                message=(
+                f"Hello {job.posted_by.username},\n\n"
+                f"You've received a new application for your job posting titled \"{job.title}\".\n\n"
+                f"Please log in to your recruiter dashboard to review the applicant's profile and take the next steps.\n\n"
+                f"Regards,\nJob Hunt Team"
+                ),
                 recipient_email=job.posted_by.email,
             )
     except Exception as e:
